@@ -13,13 +13,16 @@ services:
     depends_on:
       - db
   db:
+    build: ./services/postgres
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
-      - POSTGRES_USER={your username}
-      - POSTGRES_PASSWORD={your password}
-      - POSTGRES_DB={your db name}
+      - POSTGRES_USER=hello_flask
+      - POSTGRES_PASSWORD=hello_flask
+      - POSTGRES_DB=hello_flask_dev
+    ports:
+      - 3067:5432
 
 volumes:
   postgres_data:
