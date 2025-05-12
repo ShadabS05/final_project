@@ -3,4 +3,26 @@
 {% block content %}
 <h2> Home </h2>
 <p> Skibidi Welcome! </p>
+<h2>Latest Tweets</h2>
+<ul>
+    {% for message in messages %}
+    	{% if message %}
+        	<li>
+            	<strong>{{ message.screen_name }}</strong> ({{ message.created_at }}):<br>
+            	{{ message.text }}<br>
+            	Location: {{ message.place_name }}
+       		</li>
+		{% endif %}
+    	{% endfor %}
+</ul>
+
+<!-- Pagination Links -->
+<div>
+    {% if messages|length == 20 %}
+        <a href="{{ url_for('root', page=page + 1) }}">Next</a>
+    {% endif %}
+    {% if page > 1 %}
+        <a href="{{ url_for('root', page=page - 1) }}">Previous</a>
+    {% endif %}
+</div>
 {% endblock %}

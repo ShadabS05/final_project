@@ -27,7 +27,41 @@ def root():
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_credentials = are_credentials_good(username, password)
-    return render_template('root.html', logged_in=good_credentials, messages=messages)
+    #sql = sqlalchemy.sql.text('''
+    #SELECT screen_name, created_at, text, place_name
+    #FROM tweets
+    #JOIN users USING (id_users)
+    #ORDER BY created_at DESC
+    #LIMIT 20 :tweets;
+    #''');
+
+    page = request.args.get('page', 1, type=int)
+
+    # Raw SQL query for the latest 20 tweets with pagination
+    sql = sqlalchemy.sql.text('''
+    SELECT screen_name, created_at, text, place_name
+    FROM tweets
+    JOIN users ON tweets.id_users = users.id_users
+    ORDER BY created_at DESC
+    LIMIT 20 OFFSET :offset
+    ''')
+
+    # Calculate offset based on the current page
+    offset = (page - 1) * 20
+
+    # Execute the query with the offset parameter
+    result = db.session.execute(sql, {'offset': offset}).fetchall()
+
+    # Prepare the messages for the template
+    messages = [{
+        'screen_name': row[0],
+        'created_at': row[1],
+        'text': row[2],
+        'place_name': row[3]
+    } for row in result]
+
+    # Render the template with the messages and logged-in status
+    return render_template('root.html', logged_in=good_credentials, messages=messages, page=page)
 
 def print_debug_info():
     username = request.args.get('username')
