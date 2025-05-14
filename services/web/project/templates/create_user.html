@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2> Account Creation Webpage </h2>
+
+{% if account_created %}
+<p>
+Account Successfully created!
+</p>
+{% endif %}
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form action='/create_user' method="POST">
+	<table>
+		<tr>
+			<td>username</td>
+			<td><input type=text name=username></td>
+		</tr>
+		<tr> 
+			<td>password</td>
+			<td><input type=password name=password></td>
+		</tr>
+		 <tr>
+                        <td>retype-password</td>                                                                                                             <td><input type=password name=retype-password></td>
+                </tr>
+		<tr>
+			<td></td>
+			<td><input type=submit value='create account!'></td>
+		</tr>
+	</table>
+</form>
+<p> New Information! </p>
+{% endblock %}

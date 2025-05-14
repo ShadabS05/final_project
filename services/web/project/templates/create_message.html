@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2> Message Creation Website </h2>
+
+{% if message_created %}
+<p>
+Message Successfully created!
+</p>
+{% endif %}
+
+<h2>Create New Message</h2>
+
+<form action='/create_message' method="POST">
+    <table>
+        <tr>
+            <td>Message Text</td>
+            <td><textarea name="message" required></textarea></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><input type="submit" value="Create Message"></td>
+        </tr>
+    </table>
+</form>
+
+{% endblock %}
+

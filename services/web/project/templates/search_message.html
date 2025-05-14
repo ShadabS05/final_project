@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2> Search For Tweets </h2>
+
+<ul>
+	{% if searched %}
+		{% for message in messages %}
+    			{% if message %}
+        			<li>
+            				<strong>{{ message.screen_name }}</strong> ({{ message.created_at }}):<br>
+            				{{ message.text }}<br>
+       				</li>
+			{% endif %}
+    		{% endfor %}
+	{% endif %}
+</ul>

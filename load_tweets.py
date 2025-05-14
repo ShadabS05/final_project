@@ -208,15 +208,13 @@ def insert_tweet(connection,tweet):
         (    id_tweets,
              id_users,
              created_at,
-             text,
-             place_name
+             text
                 )
             VALUES (
             :id_tweets,
             :id_users,
             :created_at,
-            :text,
-            :place_name
+            :text
             )
             ON CONFLICT DO NOTHING
             ''')
@@ -224,8 +222,7 @@ def insert_tweet(connection,tweet):
              'id_tweets': tweet['id'],
              'id_users': tweet['user']['id'],
              'created_at': tweet['created_at'],
-             'text': remove_nulls(text),
-             'place_name': remove_nulls(place_name)
+             'text': remove_nulls(text)
              })
 
 

@@ -7,9 +7,12 @@ from flask import (
     send_from_directory,
     request,
     render_template,
-    make_response
+    make_response,
+    redirect,
+    url_for
 )
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func, text
 from werkzeug.utils import secure_filename
 
 
@@ -39,7 +42,7 @@ def root():
 
     # Raw SQL query for the latest 20 tweets with pagination
     sql = sqlalchemy.sql.text('''
-    SELECT screen_name, created_at, text, place_name
+    SELECT screen_name, created_at, text
     FROM tweets
     JOIN users ON tweets.id_users = users.id_users
     ORDER BY created_at DESC
@@ -56,8 +59,7 @@ def root():
     messages = [{
         'screen_name': row[0],
         'created_at': row[1],
-        'text': row[2],
-        'place_name': row[3]
+        'text': row[2]
     } for row in result]
 
     # Render the template with the messages and logged-in status
@@ -72,10 +74,19 @@ def print_debug_info():
 def are_credentials_good(username, password):
     #FIXME:
     #look inside databse and check if password is correct for the user
-    if username == 'skibidi' and password == 'sigma':
-        return True
-    else:
+    if not username or not password:
         return False
+
+
+    sql = sqlalchemy.text('''
+    SELECT screen_name, password 
+    FROM users
+    WHERE screen_name = :username 
+    AND password = :password
+    ''')
+
+    result = db.session.execute(sql, {'username': username, 'password': password}).first()
+    return result is not None
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -91,8 +102,8 @@ def login():
         else:
 
             #return 'skibidi success :D'
-            template =  render_template('root.html', logged_in=True, bad_credentials=False)
-            response = make_response(template)
+            #template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
+            response = make_response(redirect(url_for('root')))
             response.set_cookie('username', username)
             response.set_cookie('password', password)
             return response
@@ -100,8 +111,92 @@ def login():
 
 @app.route('/logout')
 def logout():
-    return 'what the sigma you logged out!'
+    response = make_response(render_template('logout.html', logged_in=False))
+    response.set_cookie('username', '', expires=0)
+    response.set_cookie('password', '', expires=0)
+    return response
 
+
+def username_dne(username):
+    sql = sqlalchemy.text('''
+    SELECT screen_name
+    FROM users
+    where screen_name = :username
+    LIMIT 1
+    ''')
+    result = db.session.execute(sql, {'username': username}).first()
+    return result is None
+
+@app.route('/create_user', methods=['GET', 'POST'])
+def create_user():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    password2 = request.form.get('retype-password')
+    valid_user = username_dne(username)
+    if password2 is None:
+       return render_template('create_user.html')
+    else:
+       if not username or not password or not password2:
+            return render_template('create_user.html', error="All fields are required.")
+       if password != password2:
+            return render_template('create_user.html', error="Passwords do not match.")
+       if not valid_user:
+            return render_template('create_user.html', error="Username already taken.")
+
+            #return 'skibidi success :D'
+            #template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
+       sql_insert = sqlalchemy.text('''
+                INSERT INTO users (screen_name, password)
+                VALUES (:username, :password)
+            ''')
+       db.session.execute(sql_insert, {'username': username, 'password': password})
+       db.session.commit()
+       return render_template('create_user.html', account_created=True)
+
+@app.route('/create_message', methods=['GET', 'POST'])
+def create_message():
+    username = request.cookies.get('username')
+    password = request.cookies.get('password')
+    good_credentials = are_credentials_good(username, password)
+
+    if not good_credentials:
+        return redirect(url_for('login'))
+
+    sql = sqlalchemy.text('''
+    SELECT id_users, screen_name
+    FROM users
+    where screen_name = :username
+    LIMIT 1
+    ''')
+
+    res = db.session.execute(sql, {'username': username}).first()
+    if res:
+        id_users = res.id_users
+    else:
+        id_users = None
+    created_at = db.func.now()
+    #created_at = cur_time.replace(microsecond=0)
+    if request.method == 'POST':
+
+        message = request.form.get('message')
+
+        if message:
+            sql = sqlalchemy.sql.text('''
+            INSERT INTO tweets (id_users, created_at, text)
+            VALUES (:id_users, NOW(), :text) ''')
+
+            db.session.execute(sql, {
+                'id_users': id_users,
+                #'created_at': created_at,
+                'text': message
+                })
+            db.session.commit()
+            return render_template('create_message.html', logged_in=good_credentials, message_created=True)
+    return render_template('create_message.html', logged_in=good_credentials)
+
+@app.route('/search_message', methods=['GET', 'POST'])
+def search_message():
+    
 #class User(db.Model):
 #    __tablename__ = "users"
 #    id = db.Column(db.Integer, primary_key=True)
