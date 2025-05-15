@@ -7,6 +7,7 @@ import datetime
 import zipfile
 import io
 import json
+import sys
 
 ################################################################################
 # helper functions
