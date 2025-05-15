@@ -1,4 +1,6 @@
 CREATE EXTENSION postgis;
+CREATE EXTENSION RUM;
+
 
 \set ON_ERROR_STOP on
 
@@ -29,5 +31,7 @@ CREATE INDEX message2 ON tweets(created_at);
 CREATE INDEX credentials ON users(screen_name, password);
 
 CREATE INDEX validuser ON users(screen_name);
+
+CREATE INDEX search_tweets ON tweets USING RUM(to_tsvector('english', text));
 
 COMMIT;

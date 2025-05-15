@@ -14,13 +14,12 @@ from flask import (
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import func, text
 from werkzeug.utils import secure_filename
-
+from markupsafe import Markup
 
 app = Flask(__name__)
 app.config.from_object("project.config.Config")
 db = SQLAlchemy(app)
 db_link = "postgresql://hello_flask:hello_flask@localhost:5432/hello_flask_dev"
-
 
 
 @app.route('/')
@@ -30,13 +29,13 @@ def root():
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_credentials = are_credentials_good(username, password)
-    #sql = sqlalchemy.sql.text('''
-    #SELECT screen_name, created_at, text, place_name
-    #FROM tweets
-    #JOIN users USING (id_users)
-    #ORDER BY created_at DESC
-    #LIMIT 20 :tweets;
-    #''');
+    # sql = sqlalchemy.sql.text('''
+    # SELECT screen_name, created_at, text, place_name
+    # FROM tweets
+    # JOIN users USING (id_users)
+    # ORDER BY created_at DESC
+    # LIMIT 20 :tweets;
+    # ''');
 
     page = request.args.get('page', 1, type=int)
 
@@ -65,34 +64,34 @@ def root():
     # Render the template with the messages and logged-in status
     return render_template('root.html', logged_in=good_credentials, messages=messages, page=page)
 
-def print_debug_info():
-    username = request.args.get('username')
-    password = request.args.get('password')
-    # print('request.args.get(username)=', request.args.get('username'))
-    # print('request.args.get(password)=', request.args.get('password'))
 
 def are_credentials_good(username, password):
-    #FIXME:
-    #look inside databse and check if password is correct for the user
+
+    # FIXME:
+    # look inside databse and check if password is correct for the user
+
     if not username or not password:
         return False
 
-
     sql = sqlalchemy.text('''
-    SELECT screen_name, password 
+    SELECT screen_name, password
     FROM users
-    WHERE screen_name = :username 
+    WHERE screen_name = :username
     AND password = :password
     ''')
 
     result = db.session.execute(sql, {'username': username, 'password': password}).first()
     return result is not None
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+
     username = request.form.get('username')
     password = request.form.get('password')
+
     # print('username=', username)
+
     good_credentials = are_credentials_good(username, password)
     if username is None:
         return render_template('login.html', bad_credentials=False)
@@ -101,8 +100,9 @@ def login():
             return render_template('login.html', bad_credentials=True)
         else:
 
-            #return 'skibidi success :D'
-            #template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
+            # return 'skibidi success :D'
+            # template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
+
             response = make_response(redirect(url_for('root')))
             response.set_cookie('username', username)
             response.set_cookie('password', password)
@@ -111,6 +111,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+
     response = make_response(render_template('logout.html', logged_in=False))
     response.set_cookie('username', '', expires=0)
     response.set_cookie('password', '', expires=0)
@@ -118,6 +119,7 @@ def logout():
 
 
 def username_dne(username):
+
     sql = sqlalchemy.text('''
     SELECT screen_name
     FROM users
@@ -127,34 +129,38 @@ def username_dne(username):
     result = db.session.execute(sql, {'username': username}).first()
     return result is None
 
+
 @app.route('/create_user', methods=['GET', 'POST'])
 def create_user():
+
     username = request.form.get('username')
     password = request.form.get('password')
     password2 = request.form.get('retype-password')
     valid_user = username_dne(username)
     if password2 is None:
-       return render_template('create_user.html')
+        return render_template('create_user.html')
     else:
-       if not username or not password or not password2:
+        if not username or not password or not password2:
             return render_template('create_user.html', error="All fields are required.")
-       if password != password2:
+        if password != password2:
             return render_template('create_user.html', error="Passwords do not match.")
-       if not valid_user:
+        if not valid_user:
             return render_template('create_user.html', error="Username already taken.")
 
-            #return 'skibidi success :D'
-            #template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
-       sql_insert = sqlalchemy.text('''
+            # return 'skibidi success :D'
+            # template =  render_template('root.html', logged_in=True, bad_credentials=False, messages=[], page=1)
+        sql_insert = sqlalchemy.text('''
                 INSERT INTO users (screen_name, password)
                 VALUES (:username, :password)
             ''')
-       db.session.execute(sql_insert, {'username': username, 'password': password})
-       db.session.commit()
-       return render_template('create_user.html', account_created=True)
+        db.session.execute(sql_insert, {'username': username, 'password': password})
+        db.session.commit()
+        return render_template('create_user.html', account_created=True)
+
 
 @app.route('/create_message', methods=['GET', 'POST'])
 def create_message():
+
     username = request.cookies.get('username')
     password = request.cookies.get('password')
     good_credentials = are_credentials_good(username, password)
@@ -174,8 +180,7 @@ def create_message():
         id_users = res.id_users
     else:
         id_users = None
-    created_at = db.func.now()
-    #created_at = cur_time.replace(microsecond=0)
+
     if request.method == 'POST':
 
         message = request.form.get('message')
@@ -187,17 +192,58 @@ def create_message():
 
             db.session.execute(sql, {
                 'id_users': id_users,
-                #'created_at': created_at,
                 'text': message
-                })
+            })
             db.session.commit()
             return render_template('create_message.html', logged_in=good_credentials, message_created=True)
     return render_template('create_message.html', logged_in=good_credentials)
 
-@app.route('/search_message', methods=['GET', 'POST'])
-def search_message():
-    
-#class User(db.Model):
+
+@app.route('/search', methods=['GET', 'POST'])
+def search():
+
+    username = request.cookies.get('username')
+    password = request.cookies.get('password')
+    good_credentials = are_credentials_good(username, password)
+    messages = []
+    page = request.args.get('page', 1, type=int)
+    if request.method == 'POST':
+        query = request.form.get('search_text')
+    else:
+        query = request.args.get('search_text')
+
+    if query:
+
+        sql = sqlalchemy.sql.text('''
+        SELECT screen_name, created_at, ts_headline(text, phraseto_tsquery(:query))
+        FROM tweets
+        JOIN users ON tweets.id_users = users.id_users
+        WHERE (to_tsvector('english', text) @@
+        phraseto_tsquery('english', :query))
+        ORDER BY ts_rank(to_tsvector('english', text), phraseto_tsquery(:query)) DESC, created_at DESC
+        LIMIT 20 OFFSET :offset
+        ''')
+
+        offset = (page - 1) * 20
+
+        res = db.session.execute(sql, {
+            'offset': offset,
+            'query': query
+        })
+
+        for row in res.fetchall():
+            messages.append({
+                'screen_name': row[0],
+                'created_at': row[1],
+                'text': Markup(row[2])
+            })
+        noMatch = (len(messages) == 0)
+
+        return render_template("search.html", logged_in=good_credentials, messages=messages, page=page, searched=True, noMatch=noMatch, query=query)
+    return render_template("search.html", logged_in=good_credentials, messages=messages, page=page, searched=False)
+
+
+# class User(db.Model):
 #    __tablename__ = "users"
 #    id = db.Column(db.Integer, primary_key=True)
 #    email = db.Column(db.String(128), unique=True, nullable=False)
@@ -207,23 +253,23 @@ def search_message():
 #        self.email = email
 #
 #
-#@app.route("/")
-#def hello_world():
+# @app.route("/")
+# def hello_world():
 #    return jsonify(hello="world")
 #
 #
-#@app.route("/static/<path:filename>")
-#def staticfiles(filename):
+# @app.route("/static/<path:filename>")
+# def staticfiles(filename):
 #    return send_from_directory(app.config["STATIC_FOLDER"], filename)
 #
 #
-#@app.route("/media/<path:filename>")
-#def mediafiles(filename):
+# @app.route("/media/<path:filename>")
+# def mediafiles(filename):
 #    return send_from_directory(app.config["MEDIA_FOLDER"], filename)
 #
 #
-#@app.route("/upload", methods=["GET", "POST"])
-#def upload_file():
+# @app.route("/upload", methods=["GET", "POST"])
+# def upload_file():
 #    if request.method == "POST":
 #        file = request.files["file"]
 #        filename = secure_filename(file.filename)
