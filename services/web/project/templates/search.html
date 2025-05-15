@@ -1,50 +1,49 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <h2 style="margin-bottom: 10px;">Search for Tweets</h2>
 
-<h2> Search For Tweets </h2>
+    <form action='/search' method="POST" style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; max-width: 600px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); margin-bottom: 20px;">
+        <table>
+            <tr>
+                <td><label for="search_text"><strong>Find a Message</strong></label></td>
+                <td><textarea id="search_text" name="search_text" rows="3" cols="40" style="width: 100%;" required></textarea></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input type="submit" value="Search" style="margin-top: 10px;"></td>
+            </tr>
+        </table>
+    </form>
 
-<form action='/search' method="POST">
-    <table>
-        <tr>
-            <td>Find a Message</td>
-            <td><textarea name='search_text' required></textarea></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="submit" value="search"></td>
-        </tr>
-    </table>
-</form>
-
-{% if searched %}
-<p> search worked! </p>
-{% endif %}
-
-<ul>
-	{% if searched %}
-		{% for message in messages %}
-    			{% if message %}
-        			<li>
-            				<strong>{{ message.screen_name }}</strong> ({{ message.created_at }}):<br>
-            				{{ message.text | safe }}<br>
-       				</li>
-			{% endif %}
-    		{% endfor %}
-	{% endif %}
-</ul>
-
-{% if noMatch %}
-<p> No tweets matched your query. </p>
-{% else %}
-<div>
-    {% if messages|length == 20 %}
-        <a href="{{ url_for('search', page=page + 1, search_text=query) }}">Next</a>
+    {% if searched %}
+        <p style="color: green; font-weight: bold;">✅ Search worked!</p>
     {% endif %}
-    {% if page > 1 %}
-        <a href="{{ url_for('search', page=page - 1, search_text=query) }}">Previous</a>
-    {% endif %}
-</div>
-{% endif %}
 
+    <ul style="list-style-type: none; padding: 0;">
+        {% if searched %}
+            {% for message in messages %}
+                {% if message %}
+                    <li style="background-color: #ffffff; padding: 15px; margin-bottom: 10px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);">
+                        <strong>{{ message.screen_name }}</strong> ({{ message.created_at }}):<br>
+                        {{ message.text | safe }}<br>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    </ul>
+
+    {% if noMatch %}
+        <p style="color: red;">❌ No tweets matched your query.</p>
+    {% else %}
+        <div style="margin-top: 15px;">
+            {% if messages|length == 20 %}
+                <a href="{{ url_for('search', page=page + 1, search_text=query) }}">Next</a>
+            {% endif %}
+            {% if page > 1 %}
+                <a href="{{ url_for('search', page=page - 1, search_text=query) }}">Previous</a>
+            {% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
+

@@ -1,27 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2> Home </h2>
-<p> Skibidi Welcome! </p>
-<h2>Latest Tweets</h2>
-<ul>
-    {% for message in messages %}
-    	{% if message %}
-        	<li>
-            	<strong>{{ message.screen_name }}</strong> ({{ message.created_at }}):<br>
-            	{{ message.text }}<br>
-       		</li>
-		{% endif %}
-    	{% endfor %}
-</ul>
+    <h2>Home</h2>
+    <p><em>Skibidi Welcome!</em></p>
 
-<!-- Pagination Links -->
-<div>
-    {% if messages|length == 20 %}
-        <a href="{{ url_for('root', page=page + 1) }}">Next</a>
-    {% endif %}
-    {% if page > 1 %}
-        <a href="{{ url_for('root', page=page - 1) }}">Previous</a>
-    {% endif %}
-</div>
+    <h2>Latest Tweets</h2>
+    <ul style="list-style-type: none; padding-left: 0;">
+        {% for message in messages %}
+            {% if message %}
+                <li style="background: #fff; margin-bottom: 15px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <strong style="color: #1da1f2;">{{ message.screen_name }}</strong>
+                    <span style="color: #657786; font-size: 0.9em;">({{ message.created_at }})</span><br>
+                    <p style="margin-top: 10px;">{{ message.text }}</p>
+                </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    <!-- Pagination Links -->
+    <div style="margin-top: 20px;">
+        {% if messages|length == 20 %}
+            <a href="{{ url_for('root', page=page + 1) }}" style="margin-right: 10px; text-decoration: none; color: #1da1f2;">Next &rarr;</a>
+        {% endif %}
+        {% if page > 1 %}
+            <a href="{{ url_for('root', page=page - 1) }}" style="text-decoration: none; color: #1da1f2;">&larr; Previous</a>
+        {% endif %}
+    </div>
 {% endblock %}
+

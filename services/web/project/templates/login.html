@@ -1,27 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2> Login Webpage </h2>
+    <h2 style="margin-bottom: 10px;">Login</h2>
 
-{% if bad_credentials %}
-ERROR: Username or Password incorrect.
-</p>
-{% endif %}
-<form action='/login' method="POST">
-	<table>
-		<tr>
-			<td>username</td>
-			<td><input type=text name=username></td>
-		</tr>
-		<tr> 
-			<td>password</td>
-			<td><input type=password name=password></td>
-		</tr>
-		<tr>
-			<td></td>
-			<td><input type=submit value='log in'></td>
-		</tr>
-	</table>
-</form>
-<p> LOG IN NOW </p>
+    {% if bad_credentials %}
+        <p style="color: red; background-color: #ffe6e6; padding: 10px; border-radius: 6px; width: fit-content;">
+            ❌ ERROR: Username or Password incorrect.
+        </p>
+    {% endif %}
+
+    <form action="/login" method="POST" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 500px;">
+        <div style="margin-bottom: 15px;">
+            <label for="username" style="display: block; font-weight: bold; margin-bottom: 5px;">Username</label>
+            <input type="text" name="username" id="username" required style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <label for="password" style="display: block; font-weight: bold; margin-bottom: 5px;">Password</label>
+            <input type="password" name="password" id="password" required style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+        </div>
+
+        <input type="submit" value="Log In" style="background-color: #1da1f2; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+    </form>
+
+    <p style="margin-top: 20px; font-style: italic;">LOG IN NOW</p>
 {% endblock %}
+

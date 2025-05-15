@@ -1,28 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2> Message Creation Website </h2>
+    <h2 style="margin-bottom: 10px;">Message Creation</h2>
 
-{% if message_created %}
-<p>
-Message Successfully created!
-</p>
-{% endif %}
+    {% if message_created %}
+        <p style="color: green; background: #e6ffe6; padding: 10px; border-radius: 6px; width: fit-content;">
+            ✅ Message successfully created!
+        </p>
+    {% endif %}
 
-<h2>Create New Message</h2>
+    <h3 style="margin-top: 30px;">Create New Message</h3>
 
-<form action='/create_message' method="POST">
-    <table>
-        <tr>
-            <td>Message Text</td>
-            <td><textarea name="message" required></textarea></td>
-        </tr>
-        <tr>
-            <td></td>
-            <td><input type="submit" value="Create Message"></td>
-        </tr>
-    </table>
-</form>
-
+    <form action="/create_message" method="POST" style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); max-width: 500px;">
+        <div style="margin-bottom: 15px;">
+            <label for="message" style="display: block; font-weight: bold; margin-bottom: 5px;">Message Text</label>
+            <textarea name="message" id="message" rows="5" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;" required></textarea>
+        </div>
+        <input type="submit" value="Create Message" style="background-color: #1da1f2; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+    </form>
 {% endblock %}
 

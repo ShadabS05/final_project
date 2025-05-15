@@ -30,6 +30,6 @@ jobs:
         # this is a bit hacky,
         # and a proper check would be to have an infinite loop that terminates once the data has been loaded
         sleep 20
-        ./load_tweets_prod.sh
+        ./load_tweets.sh
 
 
