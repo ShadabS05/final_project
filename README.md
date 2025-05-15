@@ -1,11 +1,34 @@
-# flask-on-docker
+# twitter-clone
 [![](https://github.com/ShadabS05/final_project/workflows/tests/badge.svg)](https://github.com/ShadabS05/final_project/actions?query=workflow%3Atests)
 
 
-This is a demo flask app that utilizes Instagram's tech stack, and is deployed using Docker. The production environments use Nginix and Gunicorn, with Nginx serving as the reverse proxy serverfor user-uploaded media files and Gunicorn which serves as WSGI HTTP server for the Flask application in production. PostgreSQL is used as a database to store data.
+This is a twitter clone that uses the following tech stack:
 
-<img src="video.gif"/>
+1.Python
+2.Flask
+3.Docker
+3.HTML/CSS
+4.Jinga2
+5.PostgreSQL
+6.Nginx
+7.Gunicorn
 
+This twitter clone has 6 pages.
+
+- Home
+    - Default page, loads in most recent messages with 20 tweets per page.
+- Search Message
+    - Has a textbook that is used to search through all messages that are within the searchbar.
+- Login
+    - A user can login with a valid username and password, grants access to create message feature.
+- Create User
+    - A user can create an account with a new username and with a password.
+- Create Message
+    - A user can "post" a message online.
+- Logout
+    - A user can logout (deletes cookies).
+
+In the future, there will be more functionality to add images, user account profiles, and more. Furthermore, there will be more updates to the websites style!
 
 ## Prerequisites
 
@@ -20,7 +43,7 @@ After you have cloned this repository, you need the following files:
 ```
 FLASK_APP=project/__init__.py
 FLASK_DEBUG=1
-DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your db name}
+DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your dev db name}
 SQL_HOST=db
 SQL_PORT=5432
 DATABASE=postgres
@@ -32,7 +55,7 @@ APP_FOLDER=/usr/src/app
 ```
 FLASK_APP=project/__init__.py
 FLASK_DEBUG=0
-DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your db name}
+DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your prod db name}
 SQL_HOST=db
 SQL_PORT=5432
 DATABASE=postgres
@@ -44,7 +67,7 @@ APP_FOLDER=/home/app/web
 ```
 POSTGRES_USER={your username}
 POSTGRES_PASSWORD={your password}
-POSTGRES_DB={your db name}
+POSTGRES_DB={your prod db name}
 ```
 
 Afterwards, edit the `docker-compose.yml` file so that it uses your username and password for the db. Now, we can use docker compose to start building!
