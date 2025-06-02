@@ -41,44 +41,6 @@ In the future, there will be more functionality to add images, user account prof
 
 Make sure you have docker / docker compose installed. Afterwards, you can clone this repository.
 
-## Setup Instructions
-
-After you have cloned this repository, you need the following files:
-
-1. .env.dev
-
-```
-FLASK_APP=project/__init__.py
-FLASK_DEBUG=1
-DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your dev db name}
-SQL_HOST=db
-SQL_PORT=5432
-DATABASE=postgres
-APP_FOLDER=/usr/src/app
-```
-
-2. .env.prod
-
-```
-FLASK_APP=project/__init__.py
-FLASK_DEBUG=0
-DATABASE_URL=postgresql://{your username}:{your password}@db:5432/{your prod db name}
-SQL_HOST=db
-SQL_PORT=5432
-DATABASE=postgres
-APP_FOLDER=/home/app/web
-```
-
-3. .env.prod.db
-
-```
-POSTGRES_USER={your username}
-POSTGRES_PASSWORD={your password}
-POSTGRES_DB={your prod db name}
-```
-
-Afterwards, edit the `docker-compose.yml` file so that it uses your username and password for the db. Now, we can use docker compose to start building!
-
 ## Building
 
 Before we build, we must ensure that port forwarding is enabled.This allows us to run our flask application locally. The default for production is `1486`. Once port forwarding is enabled, run the following commands in order:
