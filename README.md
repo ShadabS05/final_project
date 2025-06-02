@@ -5,12 +5,19 @@
 This is a twitter clone that uses the following tech stack:
 
 1.Python
+
 2.Flask
+
 3.Docker
+
 3.HTML/CSS
+
 4.Jinga2
+
 5.PostgreSQL
+
 6.Nginx
+
 7.Gunicorn
 
 This twitter clone has 6 pages.
@@ -38,7 +45,7 @@ Make sure you have docker / docker compose installed. Afterwards, you can clone 
 
 After you have cloned this repository, you need the following files:
 
-1. .end.dev
+1. .env.dev
 
 ```
 FLASK_APP=project/__init__.py
@@ -50,7 +57,7 @@ DATABASE=postgres
 APP_FOLDER=/usr/src/app
 ```
 
-2. .end.prod
+2. .env.prod
 
 ```
 FLASK_APP=project/__init__.py
@@ -95,12 +102,9 @@ The first command builds a new image and spins the containers. The next command 
 
 To see your local flask application, you want to go to the following link in firefox:
 
-`localhost:PORT/upload`.
+`localhost:POR`.
 
-PORT depends on your first number in your portforwarding. From here, you can browse and upload your image.
+PORT depends on your first number in your portforwarding. From here, you can use the twitter clone!
 
-To see your image, go to the following link: 
-
-`localhost:PORT/upload/FILENAME`.
 
  If there are any issues, please let me know!
