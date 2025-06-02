@@ -64,7 +64,7 @@ The first command builds a new image and spins the containers. The next command 
 
 To see your local flask application, you want to go to the following link in firefox:
 
-`localhost:POR`.
+`localhost:PORT`.
 
 PORT depends on your first number in your portforwarding. From here, you can use the twitter clone!
 
